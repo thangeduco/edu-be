@@ -1,47 +1,30 @@
-// src/application/BM/use-cases/products/ProductUseCases.ts
+// src/features/BM/usecases/ProductUseCases.ts
 
+import { IProductRepo } from "../../../../domain/BM/repos/IProductRepo";
 import {
-  ListProductsInput,
-  ListProductsOutput,
-  GetProductDetailInput,
-  GetProductDetailOutput,
-  ListStudentSubscriptionsInput,
-  ListStudentSubscriptionsOutput,
-} from '../../dtos/ProductDtos';
+  ProductResponseDto,
+  mapBmProductToProductResponseDto,
+} from "../../dtos/ProductDtos";
 
-// TODO: import repo interfaces khi có domain
-// import { IProductRepository } from '../../../domain/BM/repos/IProductRepository';
-// import { ISubscriptionRepository } from '../../../domain/BM/repos/ISubscriptionRepository';
+/**
+ * Use Case: GetProductDetailUC
+ * Lấy thông tin chi tiết của một sản phẩm dựa vào productCode
+ */
+export class ProductUseCases {
+  constructor(private repo: IProductRepo) {}
 
-export class ListProductsUseCase {
-  constructor() {}
+  async getProductDetailByCode(productCode: string): Promise<ProductResponseDto> {
+    console.info(`[getProductDetailByCode] Lấy chi tiết sản phẩm: ${productCode}`);
 
-  async execute(_input: ListProductsInput): Promise<ListProductsOutput> {
-    // TODO: query bm_products
-    return {
-      products: [],
-    };
-  }
-}
+    const product = await this.repo.findByProductCode(productCode);
 
-export class GetProductDetailUseCase {
-  constructor() {}
+    if (!product) {
+      throw new Error(`Không tìm thấy sản phẩm với mã: ${productCode}`);
+    }
 
-  async execute(_input: GetProductDetailInput): Promise<GetProductDetailOutput> {
-    // TODO: query bm_products by id
-    return {
-      product: undefined,
-    };
-  }
-}
+    // Map sang DTO chuẩn
+    const dto = mapBmProductToProductResponseDto(product);
 
-export class ListStudentSubscriptionsUseCase {
-  constructor() {}
-
-  async execute(_input: ListStudentSubscriptionsInput): Promise<ListStudentSubscriptionsOutput> {
-    // TODO: query bm_subscriptions by student id
-    return {
-      subscriptions: [],
-    };
+    return dto;
   }
 }

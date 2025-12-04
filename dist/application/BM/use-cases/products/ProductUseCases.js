@@ -1,37 +1,25 @@
 "use strict";
-// src/application/BM/use-cases/products/ProductUseCases.ts
+// src/features/BM/usecases/ProductUseCases.ts
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ListStudentSubscriptionsUseCase = exports.GetProductDetailUseCase = exports.ListProductsUseCase = void 0;
-// TODO: import repo interfaces khi có domain
-// import { IProductRepository } from '../../../domain/BM/repos/IProductRepository';
-// import { ISubscriptionRepository } from '../../../domain/BM/repos/ISubscriptionRepository';
-class ListProductsUseCase {
-    constructor() { }
-    async execute(_input) {
-        // TODO: query bm_products
-        return {
-            products: [],
-        };
+exports.ProductUseCases = void 0;
+const ProductDtos_1 = require("../../dtos/ProductDtos");
+/**
+ * Use Case: GetProductDetailUC
+ * Lấy thông tin chi tiết của một sản phẩm dựa vào productCode
+ */
+class ProductUseCases {
+    constructor(repo) {
+        this.repo = repo;
+    }
+    async getProductDetailByCode(productCode) {
+        console.info(`[getProductDetailByCode] Lấy chi tiết sản phẩm: ${productCode}`);
+        const product = await this.repo.findByProductCode(productCode);
+        if (!product) {
+            throw new Error(`Không tìm thấy sản phẩm với mã: ${productCode}`);
+        }
+        // Map sang DTO chuẩn
+        const dto = (0, ProductDtos_1.mapBmProductToProductResponseDto)(product);
+        return dto;
     }
 }
-exports.ListProductsUseCase = ListProductsUseCase;
-class GetProductDetailUseCase {
-    constructor() { }
-    async execute(_input) {
-        // TODO: query bm_products by id
-        return {
-            product: undefined,
-        };
-    }
-}
-exports.GetProductDetailUseCase = GetProductDetailUseCase;
-class ListStudentSubscriptionsUseCase {
-    constructor() { }
-    async execute(_input) {
-        // TODO: query bm_subscriptions by student id
-        return {
-            subscriptions: [],
-        };
-    }
-}
-exports.ListStudentSubscriptionsUseCase = ListStudentSubscriptionsUseCase;
+exports.ProductUseCases = ProductUseCases;

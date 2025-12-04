@@ -16,7 +16,7 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 __exportStar(require("./IGoalPlanRepository"), exports);
-__exportStar(require("./IVideoLearningRepository"), exports);
+__exportStar(require("./IVideoLearningRepo"), exports);
 __exportStar(require("./IWorksheetSubmissionRepository"), exports);
 __exportStar(require("./IQuizAttemptRepository"), exports);
 __exportStar(require("./IProgressRepository"), exports);

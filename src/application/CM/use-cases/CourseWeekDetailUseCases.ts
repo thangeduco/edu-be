@@ -1,0 +1,40 @@
+// src/application/CM/use-cases/CourseWeekDetailUseCases.ts
+
+import { CourseWeekDetailQuery } from "../ports/CourseWeekDetailQuery";
+import {
+  CourseWeekDetailResponseDTO,
+} from "../dtos/CourseWeekDetailDTO";
+
+/**
+ * Use Case: CourseWeekDetailUseCases
+ * Xử lý các nghiệp vụ liên quan đến việc lấy thông tin chi tiết khoá học
+ * dành cho màn CourseWeekDetailList.tsx (public view - chưa đăng nhập).
+ */
+export class CourseWeekDetailUseCases {
+  constructor(
+    private readonly query: CourseWeekDetailQuery
+  ) {}
+
+  /**
+   * Lấy thông tin chi tiết khoá học khi người dùng chưa đăng nhập.
+   * @param courseCode cm_courses.id
+   */
+  async getCourseWeekDetailForPublicView(
+    courseCode: string
+  ): Promise<CourseWeekDetailResponseDTO> {
+    console.info(
+      `[CourseWeekDetailUseCases][getCourseWeekDetailForPublicView] 🔍 Lấy chi tiết khoá học public view: courseCode=${courseCode}`
+    );
+
+    const dto =
+      await this.query.getCourseWeekDetailForPublicView({ courseCode });
+
+    if (!dto) {
+      throw new Error(
+        `Không tìm thấy dữ liệu chi tiết khoá học với mã: ${courseCode}`
+      );
+    }
+
+    return dto;
+  }
+}

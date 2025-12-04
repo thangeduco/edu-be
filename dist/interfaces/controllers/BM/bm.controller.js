@@ -59,16 +59,6 @@ class BmController {
     async getGroupDetail(req, res) {
         res.json({ message: 'getGroupDetail not implemented yet' });
     }
-    // PRODUCT CATALOG
-    async listProducts(req, res) {
-        res.json({ message: 'listProducts not implemented yet' });
-    }
-    async getProductDetail(req, res) {
-        res.json({ message: 'getProductDetail not implemented yet' });
-    }
-    async listStudentSubscriptions(req, res) {
-        res.json({ message: 'listStudentSubscriptions not implemented yet' });
-    }
     // ORDERS & PAYMENTS & SUBSCRIPTIONS
     async createOrder(req, res) {
         res.json({ message: 'createOrder not implemented yet' });

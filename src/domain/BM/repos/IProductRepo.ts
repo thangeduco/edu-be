@@ -2,15 +2,15 @@
 
 import { BmProduct, BmSubscription } from '../models/ProductModels';
 
-export interface IProductRepository {
+export interface IProductRepo {
   listProducts(filter?: { type?: string; activeOnly?: boolean }): Promise<BmProduct[]>;
-  findById(id: number): Promise<BmProduct | null>;
-  findByCode(code: string): Promise<BmProduct | null>;
+  findByProductId(productId: number): Promise<BmProduct | null>;
+  findByProductCode(productCode: string): Promise<BmProduct | null>;
 }
 
-export interface ISubscriptionRepository {
+export interface ISubscriptionRepo {
   listSubscriptionsOfStudent(studentId: number): Promise<BmSubscription[]>;
-  findById(id: number): Promise<BmSubscription | null>;
+  findBySubscriptionId(id: number): Promise<BmSubscription | null>;
   createSubscription(
     sub: Omit<BmSubscription, 'id' | 'createdAt' | 'updatedAt'>,
   ): Promise<BmSubscription>;

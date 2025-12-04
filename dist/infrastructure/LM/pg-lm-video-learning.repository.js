@@ -1,25 +1,109 @@
 "use strict";
-// LM/pg-lm-video-learning.repository.ts
+// src/infrastructure/LM/pg-lm-video-learning.repository.ts
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PgVideoProgressRepository = exports.PgVideoSessionRepository = void 0;
 const pgClient_1 = require("../db/pgClient");
+const VIDEO_SESSION_TABLE = 'lm_video_sessions';
+const VIDEO_PROGRESS_TABLE = 'lm_video_progress';
+/**
+ * PgVideoSessionRepository
+ * Triển khai IVideoSessionRepo sử dụng Postgres.
+ */
 class PgVideoSessionRepository {
     constructor(pool = pgClient_1.pgPool) {
         this.pool = pool;
     }
+    /**
+     * Tạo phiên xem video mới.
+     * - Trường id sử dụng sequence lm_video_sessions_id_seq
+     * - Trả về bản ghi vừa insert.
+     */
     async createSession(session) {
-        // TODO: INSERT INTO lm_video_sessions ...
-        // Example placeholder implementation:
-        // const result = await this.pool.query('INSERT INTO lm_video_sessions (...) VALUES (...) RETURNING *', [...]);
-        // return result.rows[0] as LmVideoSession;
-        throw new Error('Method not implemented.');
+        try {
+            const sql = `
+      INSERT INTO ${VIDEO_SESSION_TABLE} (
+        id,
+        student_id,
+        video_id,
+        started_at,
+        ended_at,
+        start_second,
+        stop_second,
+        device_type
+      ) VALUES (
+        nextval('lm_video_sessions_id_seq'),
+        $1,
+        $2,
+        NOW(),           -- 🔥 DB tự set started_at
+        $3,
+        $4,
+        $5,
+        $6
+      )
+      RETURNING
+        id,
+        student_id,
+        video_id,
+        started_at,
+        ended_at,
+        start_second,
+        stop_second,
+        device_type
+    `;
+            const params = [
+                session.student_id,
+                session.video_id,
+                session.ended_at ?? null,
+                session.start_second,
+                session.stop_second ?? null,
+                session.device_type ?? null,
+            ];
+            const result = await this.pool.query(sql, params);
+            if (result.rows.length === 0) {
+                throw new Error('[PgVideoSessionRepository][createSession] Không insert được bản ghi lm_video_sessions');
+            }
+            return result.rows[0];
+        }
+        catch (err) {
+            console.error('[PgVideoSessionRepository][createSession] ❌ Lỗi khi tạo phiên xem video', { error: err, session });
+            throw err;
+        }
     }
-    async updateSession(_session) {
-        // TODO: UPDATE lm_video_sessions ...
-        throw new Error('Method not implemented.');
+    /**
+     * Cập nhật phiên xem video khi kết thúc:
+     * - ended_at = NOW() (DB time)
+     * - stop_second = giá trị client gửi lên
+     * - updated_at = NOW()
+     */
+    async updateSession(session) {
+        try {
+            const sql = `
+        UPDATE ${VIDEO_SESSION_TABLE}
+        SET
+          ended_at = NOW(),
+          stop_second = $1
+        WHERE id = $2
+      `;
+            const params = [
+                session.stop_second ?? null,
+                session.id,
+            ];
+            const result = await this.pool.query(sql, params);
+            if (result.rowCount === 0) {
+                console.warn('[PgVideoSessionRepository][updateSession] ⚠️ Không tìm thấy session để update', { session });
+            }
+        }
+        catch (err) {
+            console.error('[PgVideoSessionRepository][updateSession] ❌ Lỗi khi update phiên xem video', { error: err, session });
+            throw err;
+        }
     }
 }
 exports.PgVideoSessionRepository = PgVideoSessionRepository;
+/**
+ * PgVideoProgressRepository
+ * Triển khai IVideoProgressRepo sử dụng Postgres.
+ */
 class PgVideoProgressRepository {
     constructor(pool = pgClient_1.pgPool) {
         this.pool = pool;
@@ -30,8 +114,13 @@ class PgVideoProgressRepository {
     }
     async upsertProgress(progress) {
         // TODO: UPSERT lm_video_progress ...
-        // Example placeholder implementation:
-        // const result = await this.pool.query('INSERT INTO lm_video_progress (...) VALUES (...) ON CONFLICT (...) DO UPDATE SET ... RETURNING *', [...]);
+        // const sql = `
+        //   INSERT INTO ${VIDEO_PROGRESS_TABLE} (...)
+        //   VALUES (...)
+        //   ON CONFLICT (student_id, video_id) DO UPDATE SET ...
+        //   RETURNING *
+        // `;
+        // const result = await this.pool.query(sql, [...]);
         // return result.rows[0] as LmVideoProgress;
         throw new Error('Method not implemented.');
     }

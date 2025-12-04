@@ -1,12 +1,15 @@
 // routes/cm.routes.ts
 
 import { Router } from 'express';
+
 import { CmCourseController } from '../controllers/CM/cm-course.controller';
 import { CmWeekController } from '../controllers/CM/cm-week.controller';
 import { CmLessonController } from '../controllers/CM/cm-lesson.controller';
 import { CmVideoController } from '../controllers/CM/cm-video.controller';
 import { CmWorksheetController } from '../controllers/CM/cm-worksheet.controller';
 import { CmQuestionController } from '../controllers/CM/cm-question.controller';
+
+import { cmCourseWeekDetailController } from '../controllers/CM/cm-course-week-detail.controller';
 
 const router = Router();
 
@@ -16,6 +19,24 @@ const lessonController = new CmLessonController();
 const videoController = new CmVideoController();
 const worksheetController = new CmWorksheetController();
 const questionController = new CmQuestionController();
+
+/* -------------------------------------------------------------------------- */
+/*                                NEW API (PUBLIC VIEW)                       */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * Lấy toàn bộ dữ liệu header + sidebar + body của khoá học cho public view
+ * GET /cm/courses/:courseCode/week-detail/public
+ */
+router.get(
+  '/courses/:courseCode/week-detail/public',
+  (req, res) =>
+    cmCourseWeekDetailController.getCourseWeekDetailForPublicView(req, res)
+);
+
+/* -------------------------------------------------------------------------- */
+/*                                   OLD APIs                                 */
+/* -------------------------------------------------------------------------- */
 
 // Courses
 router.get('/courses', (req, res) => courseController.listCourses(req, res));
